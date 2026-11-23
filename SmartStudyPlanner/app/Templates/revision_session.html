@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block title %} Revision Session | Smart Study
+Planner {% endblock %} {% block content %}
+
+<section class="revision-page">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <p class="hero-label">REVISION SESSION</p>
+
+        <h1>{{ topic.title }}</h1>
+
+        <p>Focus on this topic and strengthen your memory.</p>
+      </div>
+    </div>
+
+    <div class="revision-card">
+      <div class="card-header">
+        <div>
+          <span class="card-label"> CURRENT REVISION </span>
+
+          <h2>{{ topic.title }}</h2>
+        </div>
+      </div>
+
+      <div class="revision-session-content">
+        <p>
+          Take some time to recall the important concepts you learned about this
+          topic.
+        </p>
+
+        <p>Try explaining the topic without looking at your notes first.</p>
+
+        <p>Then review your notes and identify anything you forgot.</p>
+      </div>
+
+      <div class="revision-action">
+        <form method="POST" action="{{ url_for('routes.finish_revision', topic_id=topic.id) }}" style="display:inline-block;margin-right:8px">
+          <button class="btn btn-primary">✓ Finish Revision</button>
+        </form>
+
+        <a href="{{ url_for('routes.revision') }}" class="btn btn-secondary">← Back to Revision</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

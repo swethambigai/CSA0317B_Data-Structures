@@ -1,0 +1,341 @@
+{% extends "base.html" %} {% block title %} Study Planner | Smart Study Planner
+{% endblock %} {% block content %}
+
+<section class="planner-page">
+  <div class="container">
+    <!-- HEADER -->
+    <div class="page-header">
+      <div>
+        <p class="hero-label">Smart Scheduling</p>
+        <h1>Adaptive Study Planner</h1>
+      </div>
+      <div class="planner-date" id="planner-date-display">
+        <strong>Today</strong>
+      </div>
+    </div>
+
+    <!-- STATUS CARDS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px;">
+      <div class="card">
+        <div style="text-align: center;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Current Fatigue</div>
+          <strong style="font-size: 28px; color: var(--primary-color); display: block; line-height: 1;">{{ fatigue_score|default(5) }}</strong>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">{{ fatigue_level|default('Normal') }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="text-align: center;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Topics in Queue</div>
+          <strong style="font-size: 28px; color: var(--primary-color); display: block; line-height: 1;">{{ smart_plan|length|default(0) }}</strong>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">today's plan</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="text-align: center;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Estimated Time</div>
+          <strong style="font-size: 28px; color: var(--primary-color); display: block; line-height: 1;">{{ total_est_hours|default(4.5) }}</strong>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">hours</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="planner-grid">
+      <!-- LEFT: ENTER SUBJECT/TOPIC & ADAPTIVE CONDITION -->
+      <div>
+        <!-- ADD TOPIC & GENERATE PLAN CARD -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Custom Study Entry</p>
+              <h2>Enter Subject & Topic</h2>
+            </div>
+          </div>
+
+          <form method="POST" action="{{ url_for('routes.planner') }}" style="display: flex; flex-direction: column; gap: 14px;">
+            <input type="hidden" name="action" value="generate_plan" />
+
+            <!-- SUBJECT (MANUAL TEXT INPUT) -->
+            <div class="planner-form-group">
+              <label for="subject">Subject</label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                placeholder="e.g. Database Management Systems, Python, Machine Learning..."
+                required
+                class="planner-input"
+              />
+            </div>
+
+            <!-- TOPIC (MANUAL TEXT INPUT) -->
+            <div class="planner-form-group">
+              <label for="topic">Topic</label>
+              <input
+                type="text"
+                id="topic"
+                name="topic"
+                placeholder="e.g. Normalization, Binary Trees, Routing Algorithms..."
+                required
+                class="planner-input"
+              />
+            </div>
+
+            <!-- DIFFICULTY & DEADLINE -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="planner-form-group">
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty" name="difficulty" required class="planner-select">
+                  <option value="1">1 - Easy</option>
+                  <option value="2" selected>2 - Medium</option>
+                  <option value="3">3 - Hard</option>
+                  <option value="4">4 - Very Hard</option>
+                  <option value="5">5 - Critical</option>
+                </select>
+              </div>
+
+              <div class="planner-form-group">
+                <label for="deadline">Deadline</label>
+                <input type="date" id="deadline" name="deadline" class="planner-input" />
+              </div>
+            </div>
+
+            <!-- AVAILABLE STUDY TIME & STUDY DURATION -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="planner-form-group">
+                <label for="available-time">Available Study Time (hrs)</label>
+                <input
+                  type="number"
+                  id="available-time"
+                  name="available_time"
+                  min="0.5"
+                  max="24"
+                  step="0.5"
+                  value="3"
+                  class="planner-input"
+                />
+              </div>
+
+              <div class="planner-form-group">
+                <label for="duration">Study Duration (mins)</label>
+                <input
+                  type="number"
+                  id="duration"
+                  name="duration"
+                  min="10"
+                  max="300"
+                  step="5"
+                  value="60"
+                  class="planner-input"
+                />
+              </div>
+            </div>
+
+            <!-- BREAK DURATION & PRIORITY -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="planner-form-group">
+                <label for="break-duration">Break Duration (mins)</label>
+                <input
+                  type="number"
+                  id="break-duration"
+                  name="break_duration"
+                  min="0"
+                  max="60"
+                  step="5"
+                  value="15"
+                  class="planner-input"
+                />
+              </div>
+
+              <div class="planner-form-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority" required class="planner-select">
+                  <option value="1">High Priority (Exam / Urgent)</option>
+                  <option value="2" selected>Medium Priority</option>
+                  <option value="3">Low Priority</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- BUTTONS -->
+            <div style="display: flex; gap: 10px; margin-top: 6px;">
+              <button type="submit" class="btn btn-primary" style="flex: 1;">
+                ⚡ Generate Smart Plan
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TODAY'S CONDITION CARD -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Fatigue Factors</p>
+              <h2>Today's Fatigue Condition</h2>
+            </div>
+          </div>
+
+          <form method="POST" action="{{ url_for('routes.planner') }}" style="display: flex; flex-direction: column; gap: 14px;">
+            <input type="hidden" name="action" value="generate_plan" />
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="planner-form-group">
+                <label for="study-hours">Hours Studied Today</label>
+                <input type="number" id="study-hours" name="study_hours" min="0" max="24" step="0.5" value="{{ study_hours|default('0') }}" class="planner-input" />
+              </div>
+
+              <div class="planner-form-group">
+                <label for="sessions">Continuous Sessions</label>
+                <input type="number" id="sessions" name="sessions" min="0" value="{{ sessions|default('1') }}" class="planner-input" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="planner-form-group">
+                <label for="breaks">Breaks Taken</label>
+                <input type="number" id="breaks" name="breaks" min="0" value="{{ breaks|default('1') }}" class="planner-input" />
+              </div>
+
+              <div class="planner-form-group">
+                <label for="sleep">Sleep Hours (Night)</label>
+                <input type="number" id="sleep" name="sleep" min="0" max="24" step="0.5" value="{{ sleep|default('7.5') }}" class="planner-input" />
+              </div>
+            </div>
+
+            <div class="planner-form-group">
+              <label for="mood">Current Mood</label>
+              <select id="mood" name="mood" class="planner-select">
+                <option value="happy" {% if mood == 'happy' %}selected{% endif %}>😊 Happy / Energized</option>
+                <option value="neutral" {% if mood == 'neutral' or not mood %}selected{% endif %}>😐 Neutral</option>
+                <option value="tired" {% if mood == 'tired' %}selected{% endif %}>😴 Tired</option>
+                <option value="stressed" {% if mood == 'stressed' %}selected{% endif %}>😟 Stressed</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-secondary" style="width: 100%;">
+              Recalculate Fatigue & Schedule
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT: STUDY QUEUE & GENERATED PLAN -->
+      <div>
+        <!-- TOPIC QUEUE -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Priority Queue</p>
+              <h2>Upcoming Topics</h2>
+            </div>
+            <span style="background: var(--primary-light); color: var(--primary-color); padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">{{ smart_plan|length }} items</span>
+          </div>
+
+          <div class="topic-queue">
+            {% if smart_plan %}
+              {% for topic in smart_plan %}
+                <div class="topic-item">
+                  <div class="topic-number">{{ loop.index }}</div>
+                  <div class="topic-details">
+                    <strong>{{ topic.subject_name or topic.subject or 'Subject' }} → {{ topic.title or topic.name }}</strong>
+                    <span>{{ topic.estimated_minutes or topic.duration or 60 }} mins • Priority Level: {{ topic.priority|default(2) }}</span>
+                  </div>
+                  <div style="display: flex; gap: 6px; align-items: center;">
+                    <div class="difficulty {% if topic.difficulty == 1 %}easy{% elif topic.difficulty == 2 %}medium{% else %}hard{% endif %}">
+                      Diff: {{ topic.difficulty|default(2) }}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div style="text-align: center; padding: 32px; color: var(--text-muted);">
+                <div style="font-size: 28px; margin-bottom: 12px;">📚</div>
+                Type a subject and topic on the left to generate your study plan
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- GENERATED STUDY SCHEDULE WITH COMPLETION ACTION -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Generated Schedule</p>
+              <h2>Today's Smart Plan</h2>
+            </div>
+            {% if fatigue_score > 15 %}
+              <span style="background: var(--danger-light); color: var(--danger-color); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">Health Mode Active</span>
+            {% elif fatigue_score > 10 %}
+              <span style="background: var(--warning-light); color: var(--warning-color); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">Light Load Mode</span>
+            {% endif %}
+          </div>
+
+          {% set session_times = ['09:00 AM', '10:45 AM', '01:30 PM', '03:15 PM', '05:00 PM', '06:45 PM'] %}
+          <div class="study-sessions">
+            {% if smart_plan %}
+              {% for topic in smart_plan %}
+                <div class="study-session" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border-color);">
+                  <div style="display: flex; gap: 16px; align-items: center; flex: 1;">
+                    <div class="session-time" style="min-width: 80px; font-size: 12px; font-weight: 700; color: var(--primary-color);">
+                      {{ session_times[loop.index0] if loop.index0 < session_times|length else 'Next' }}
+                    </div>
+                    <div class="session-content" style="flex: 1;">
+                      <h3 style="font-size: 15px; margin: 0 0 4px 0; color: var(--text-dark);">
+                        {{ topic.subject_name or topic.subject or 'Subject' }} → {{ topic.title or topic.name }}
+                      </h3>
+                      <div style="font-size: 12px; color: var(--text-muted);">
+                        Estimated: {{ topic.estimated_minutes or topic.duration or 60 }} min • Difficulty: {{ topic.difficulty|default(2) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- MARK TASK COMPLETE BUTTON -->
+                  <form method="POST" action="{{ url_for('routes.planner') }}" style="margin: 0;">
+                    <input type="hidden" name="action" value="complete_topic" />
+                    <input type="hidden" name="topic_id" value="{{ topic.id }}" />
+                    <button type="submit" class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                      ✓ Complete
+                    </button>
+                  </form>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div style="text-align: center; padding: 32px; color: var(--text-muted);">
+                <div style="font-size: 28px; margin-bottom: 12px;">✨</div>
+                All scheduled topics completed or queue is empty!
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px;">
+          <div class="summary-item">
+            <strong>{{ smart_plan|length }}</strong>
+            <span>Planned</span>
+          </div>
+          <div class="summary-item">
+            <strong>{{ total_est_hours|default(0) }}h</strong>
+            <span>Est. Hours</span>
+          </div>
+          <div class="summary-item">
+            <strong>{{ fatigue_level|default('Normal') }}</strong>
+            <span>Condition</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Update date
+  const dateEl = document.getElementById('planner-date-display');
+  if (dateEl) {
+    dateEl.innerHTML = '<strong>' + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) + '</strong>';
+  }
+</script>
+
+{% endblock %}

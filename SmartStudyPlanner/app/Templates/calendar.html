@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block title %}Calendar | Smart Study Planner{% endblock %} {% block content %}
+
+<div class="container">
+  <section class="page-header">
+    <div>
+      <p class="hero-label">STUDY CALENDAR</p>
+      <h1>Calendar</h1>
+      <p>Mark topics as completed on the date you finished them.</p>
+    </div>
+  </section>
+
+  <section class="calendar-list">
+    {% if topics %}
+      <ul>
+        {% for topic in topics %}
+          <li style="margin-bottom:12px">
+            <strong>{{ topic.title }}</strong> — <em>{{ topic.subject_name }}</em>
+
+            <form method="POST" style="display:inline-block;margin-left:8px">
+              <input type="hidden" name="topic_id" value="{{ topic.id }}" />
+              <input type="date" name="completed_date" required />
+              <button class="btn btn-secondary">Mark Completed</button>
+            </form>
+
+            {% if topic.status == 'Completed' %}
+              <div>Completed at: {{ topic.completed_at }}</div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No topics found. Add some to your planner first.</p>
+    {% endif %}
+  </section>
+</div>
+
+{% endblock %}

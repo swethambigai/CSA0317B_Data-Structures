@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %}Smart Study Planner{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
+    {% if session.get('student_id') %}
+      <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-header">
+            <span class="sidebar-logo-icon">🌿</span>
+            <span class="sidebar-logo-text">SmartStudy</span>
+            <button class="sidebar-close" id="sidebar-close-btn">×</button>
+          </div>
+          
+          <nav class="sidebar-nav">
+            <a href="{{ url_for('routes.dashboard') }}" class="nav-item {% if request.path == url_for('routes.dashboard') %}active{% endif %}">
+              <span class="nav-icon">📊</span>
+              <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('routes.planner') }}" class="nav-item {% if request.path == url_for('routes.planner') %}active{% endif %}">
+              <span class="nav-icon">📅</span>
+              <span>Study Planner</span>
+            </a>
+            <a href="{{ url_for('routes.calendar') }}" class="nav-item {% if request.path == url_for('routes.calendar') %}active{% endif %}">
+              <span class="nav-icon">🗓️</span>
+              <span>Calendar</span>
+            </a>
+            <a href="{{ url_for('routes.revision') }}" class="nav-item {% if request.path == url_for('routes.revision') %}active{% endif %}">
+              <span class="nav-icon">📖</span>
+              <span>Revision Center</span>
+            </a>
+            <a href="{{ url_for('routes.analytics') }}" class="nav-item {% if request.path == url_for('routes.analytics') %}active{% endif %}">
+              <span class="nav-icon">📈</span>
+              <span>Analytics</span>
+            </a>
+            <a href="{{ url_for('routes.health_mode') }}" class="nav-item {% if request.path == url_for('routes.health_mode') %}active{% endif %}">
+              <span class="nav-icon">🌿</span>
+              <span>Well-being</span>
+            </a>
+            <a href="{{ url_for('routes.profile') }}" class="nav-item {% if request.path == url_for('routes.profile') %}active{% endif %}">
+              <span class="nav-icon">👤</span>
+              <span>Profile</span>
+            </a>
+          </nav>
+
+          <div class="sidebar-footer">
+            <div class="sidebar-user">
+              <div class="user-avatar">{{ session.get('student_name', 'S')[0]|upper }}</div>
+              <div class="user-info">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-role">Student</span>
+              </div>
+            </div>
+            <a href="{{ url_for('routes.logout') }}" class="logout-btn">
+              <span class="logout-icon">🚪</span>
+              <span>Logout</span>
+            </a>
+          </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+          <header class="top-nav">
+            <button class="mobile-menu-toggle" id="mobile-toggle-btn">☰</button>
+            <div class="top-nav-brand">Smart Study Planner</div>
+            <div class="top-nav-actions">
+              <div class="notification-trigger">
+                <span class="notification-icon">🔔</span>
+                <span class="notification-dot"></span>
+              </div>
+              <div class="top-nav-profile">
+                <span>{{ session.get('student_name', 'Student') }}</span>
+              </div>
+            </div>
+          </header>
+
+          <main class="content-container">
+    {% else %}
+      <!-- Standard Layout for Landings, Login, Register -->
+      <header class="navbar">
+        <div class="container navbar-content">
+          <a href="{{ url_for('routes.index') }}" class="logo">
+            Smart Study Planner
+          </a>
+
+          <nav class="nav-links">
+            <a href="{{ url_for('routes.index') }}">Home</a>
+            <a href="{{ url_for('routes.login') }}">Login</a>
+            <a href="{{ url_for('routes.register') }}">Register</a>
+          </nav>
+        </div>
+      </header>
+
+      <main class="main-content-public">
+    {% endif %}
+
+    {% block content %} {% endblock %}
+
+    {% if session.get('student_id') %}
+          </main>
+        </div>
+      </div>
+
+      <!-- Backdrop overlay for mobile menu -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const mobileToggle = document.getElementById('mobile-toggle-btn');
+          const sidebarClose = document.getElementById('sidebar-close-btn');
+          const sidebar = document.getElementById('sidebar');
+          const overlay = document.getElementById('sidebar-overlay');
+
+          function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+          }
+
+          if (mobileToggle) mobileToggle.addEventListener('click', toggleSidebar);
+          if (sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
+          if (overlay) overlay.addEventListener('click', toggleSidebar);
+        });
+
+        // Notification behavior
+        document.addEventListener('DOMContentLoaded', function() {
+          const trigger = document.querySelector('.notification-trigger');
+          const dot = document.querySelector('.notification-dot');
+          const previewBtn = document.getElementById('preview-notification');
+
+          const messages = [
+            'Time to study? Wanna grab a book?',
+            "How's your productivity going today?",
+            'What is your mood to study right now?',
+            'Small wins: 25 minutes focused—want to try one now?'
+          ];
+
+          function showReminder(text) {
+            if (window.Notification && Notification.permission === 'granted') {
+              try {
+                new Notification('SmartStudy Reminder', { body: text, icon: '' });
+              } catch (e) {
+                console.log('Notification failed', e);
+              }
+            } else {
+              // Fallback: flash-style browser alert
+              alert(text);
+            }
+          }
+
+          async function checkAndNotify() {
+            try {
+              const res = await fetch('/api/settings');
+              if (!res.ok) return;
+              const data = await res.json();
+
+              if (data.notifications_enabled) {
+                if (Notification && Notification.permission !== 'granted') {
+                  await Notification.requestPermission();
+                }
+
+                if (Notification.permission === 'granted') {
+                  const text = messages[Math.floor(Math.random() * messages.length)];
+                  showReminder(text);
+                  if (dot) dot.classList.remove('active');
+                }
+              }
+            } catch (e) {
+              console.log('Could not fetch settings for notifications', e);
+            }
+          }
+
+          async function fetchSettingsOnly() {
+            try {
+              const res = await fetch('/api/settings');
+              if (!res.ok) return;
+              const data = await res.json();
+              if (dot) {
+                if (data.notifications_enabled) dot.classList.add('active');
+                else dot.classList.remove('active');
+              }
+            } catch (e) {
+              console.log('Could not fetch settings for notifications', e);
+            }
+          }
+
+          if (trigger) {
+            trigger.addEventListener('click', async function() {
+              // On click, always attempt a notification
+              await checkAndNotify();
+            });
+          }
+
+          if (previewBtn) {
+            previewBtn.addEventListener('click', async function() {
+              if (Notification && Notification.permission !== 'granted') {
+                await Notification.requestPermission();
+              }
+
+              const text = 'Preview — Time to study? Wanna grab a book?';
+              showReminder(text);
+            });
+          }
+
+          // Initial dot state
+          fetchSettingsOnly();
+
+          // Periodic gentle reminders when enabled (every 30 minutes)
+          setInterval(checkAndNotify, 30 * 60 * 1000);
+        });
+      </script>
+    {% else %}
+      </main>
+
+      <footer class="footer">
+        <div class="container">
+          <p>© 2026 Smart Study Planner. Study smarter. Take care of yourself.</p>
+        </div>
+      </footer>
+    {% endif %}
+  </body>
+</html>

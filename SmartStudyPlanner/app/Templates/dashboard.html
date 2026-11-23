@@ -1,0 +1,277 @@
+{% extends "base.html" %} {% block title %} Dashboard | Smart Study Planner {%
+endblock %} {% block content %}
+
+<section class="dashboard-page">
+  <div class="container">
+    <!-- HEADER -->
+    <div class="page-header">
+      <div>
+        <p class="hero-label">Welcome Back</p>
+        <h1>Hey, {{ student_name }}! 🌱</h1>
+      </div>
+      <div class="dashboard-date">
+        <strong id="dashboardDate">Today</strong>
+      </div>
+    </div>
+
+    <!-- MOTIVATIONAL & STREAK BANNER -->
+    <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(234, 230, 246, 0.8), rgba(214, 239, 232, 0.8)); border: 1px solid rgba(155, 143, 196, 0.3);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div style="flex: 1; min-width: 260px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 20px;">🌟</span>
+            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary-color);">Today's Motivation</span>
+            <span id="studyStreak" style="background: linear-gradient(135deg, #FF9A76, #FF6B6B); color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">
+              {{ study_streak|default(1) }} Day Streak 🔥
+            </span>
+          </div>
+          <p id="dailyQuote" style="font-size: 15px; font-weight: 600; color: var(--text-dark); margin: 0 0 6px 0; font-style: italic; line-height: 1.4;">
+            “{{ daily_quote|default('Small steps every day create big results.') }}”
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 0; font-weight: 500;">
+            {{ motivation_message|default('Great job! You are making steady progress. 🌟') }}
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="newQuoteBtn" type="button" class="btn btn-secondary" style="font-size: 12px; padding: 8px 14px;">
+            🎲 New Quote
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEY METRICS GRID -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div>
+          <span>Study Hours</span>
+          <strong id="totalStudyHours">{{ statistics.total_study_hours|default(0) }}</strong>
+          <small>hrs tracked</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div>
+          <span>Topics Completed</span>
+          <strong id="completedTopics">{{ statistics.completed_topics|default(0) }}</strong>
+          <small>overall</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div>
+          <span>Topics Today</span>
+          <strong id="pendingTopics">{{ pending_topics|length }}</strong>
+          <small>{{ pending_topics|length }} remaining to study</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div>
+          <span>Completion</span>
+          <strong id="productivityScore">{{ statistics.completion_percentage|default(0) }}%</strong>
+          <small>progress</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dashboard-grid">
+      <!-- LEFT: TODAY'S STUDY QUEUE & SCHEDULE -->
+      <div>
+        <!-- STUDY QUEUE CARD -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Study Queue</p>
+              <h2>Today's Topics</h2>
+            </div>
+            <span style="background: var(--primary-light); color: var(--primary-color); padding: 6px 14px; border-radius: 12px; font-size: 12px; font-weight: 700;">
+              {{ pending_topics|length }} topics
+            </span>
+          </div>
+
+          <div class="study-list">
+            {% if pending_topics %}
+              {% for topic in pending_topics[:8] %}
+                <div class="study-item">
+                  <div class="study-status">{{ loop.index }}</div>
+                  <div class="study-info">
+                    <strong>{{ topic.title }}</strong>
+                    <span>{{ topic.subject_name }}</span>
+                  </div>
+                  <div class="difficulty {% if topic.difficulty == 1 %}easy{% elif topic.difficulty == 2 %}medium{% else %}hard{% endif %}">
+                    {% if topic.difficulty == 1 %}Easy{% elif topic.difficulty == 2 %}Medium{% else %}Hard{% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div style="text-align: center; padding: 32px; color: var(--text-muted);">
+                <div style="font-size: 32px; margin-bottom: 12px;">✨</div>
+                All topics completed — great job!
+              </div>
+            {% endif %}
+          </div>
+
+          <a href="{{ url_for('routes.planner') }}" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; color: var(--primary-color); font-weight: 600; font-size: 13px; text-decoration: none;">
+            View full schedule →
+          </a>
+        </div>
+
+        <!-- UPCOMING SESSIONS TIMELINE -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Today's Schedule</p>
+              <h2>Study Sessions</h2>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0;">
+            {% set session_times = ['09:00 AM', '10:45 AM', '01:30 PM', '03:15 PM', '05:00 PM'] %}
+            {% if smart_plan %}
+              {% for topic in smart_plan[:4] %}
+                <div style="display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 40px;">
+                  <div style="position: absolute; left: 4px; top: 16px; width: 20px; height: 20px; background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); border-radius: 50%; border: 3px solid white;"></div>
+                  <div style="min-width: 90px; color: var(--primary-color); font-weight: 600; font-size: 13px;">{{ session_times[loop.index0] if loop.index0 < session_times|length else 'Next' }}</div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600; color: var(--text-dark); font-size: 14px; margin-bottom: 2px;">{{ topic.subject_name or topic.subject or 'Subject' }}</div>
+                    <div style="color: var(--text-muted); font-size: 12px;">{{ topic.title }}</div>
+                    <div style="color: var(--primary-color); font-weight: 600; font-size: 11px; margin-top: 4px;">{{ topic.estimated_minutes or topic.duration or 60 }} min</div>
+                  </div>
+                </div>
+                {% if not loop.last %}
+                  <div style="display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 40px; background: rgba(240, 240, 245, 0.4);">
+                    <div style="position: absolute; left: 4px; top: 12px; width: 16px; height: 16px; background: var(--secondary-color); border-radius: 50%; border: 2px solid white;"></div>
+                    <div style="min-width: 90px; color: var(--text-muted); font-weight: 600; font-size: 12px;">Break</div>
+                    <div style="flex: 1; opacity: 0.8;">
+                      <div style="font-weight: 600; color: var(--text-dark); font-size: 13px;">☕ Refresh & Stretch</div>
+                      <div style="color: var(--text-muted); font-size: 11px;">10-15 min break</div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <div style="text-align: center; padding: 32px; color: var(--text-muted);">
+                <div style="font-size: 28px; margin-bottom: 8px;">📅</div>
+                No sessions planned yet. <a href="{{ url_for('routes.planner') }}" style="color: var(--primary-color); font-weight: 600;">Generate a Smart Plan</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: WELL-BEING & MOTIVATION -->
+      <div>
+        <!-- WELL-BEING CARD -->
+        <div class="health-status-card {% if fatigue_score <= 5 %}fatigue-good{% elif fatigue_score <= 10 %}fatigue-mild{% else %}fatigue-high{% endif %}">
+          <div class="health-status-icon">
+            {% if fatigue_score <= 5 %}🌟{% elif fatigue_score <= 10 %}⚠️{% else %}🚨{% endif %}
+          </div>
+          <div class="health-status-content">
+            <p class="status-label">Your Well-Being</p>
+            <h2>
+              {% if fatigue_score <= 5 %}You're in Good Shape{% elif fatigue_score <= 10 %}Mild Fatigue Detected{% else %}Health Mode Recommended{% endif %}
+            </h2>
+            <p>
+              {% if fatigue_score <= 5 %}
+                Your fatigue levels are optimal for focused studying. Keep up the great balance!
+              {% elif fatigue_score <= 10 %}
+                Take short breaks every 45 minutes to keep your mind alert and fresh.
+              {% else %}
+                High fatigue detected. Consider lighter revision and getting adequate rest.
+              {% endif %}
+            </p>
+          </div>
+          <div class="fatigue-score">
+            <span>Fatigue</span>
+            <strong id="fatigueScore">{{ fatigue_score }}</strong>
+            <small style="background: var(--bg-good); color: var(--color-good); padding: 4px 8px; border-radius: 8px; display: inline-block; margin-top: 8px;">
+              {{ fatigue_level }}
+            </small>
+          </div>
+        </div>
+
+        <!-- REVISION DUE CARD -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <p class="card-label">Revision Center</p>
+              <h2>Ready to Review</h2>
+            </div>
+            <span style="background: var(--primary-light); color: var(--primary-color); padding: 6px 14px; border-radius: 12px; font-size: 12px; font-weight: 700;">
+              {{ completed_topics|length }} topics
+            </span>
+          </div>
+
+          {% if completed_topics %}
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              {% for topic in completed_topics[:4] %}
+                <div style="background: linear-gradient(135deg, #F7F5FA 0%, #FAF9FE 100%); border-radius: 12px; padding: 12px 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--primary-light), var(--secondary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: 700; font-size: 12px;">{{ loop.index }}</div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600; color: var(--text-dark); font-size: 13px;">{{ topic.title }}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Ready for spaced review</div>
+                  </div>
+                  <a href="{{ url_for('routes.start_revision', topic_id=topic.id) }}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">Review</a>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+              Complete topics in your planner to enable spaced review
+            </div>
+          {% endif %}
+
+          <a href="{{ url_for('routes.revision') }}" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; color: var(--primary-color); font-weight: 600; font-size: 13px; text-decoration: none;">
+            Open revision schedule →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border-color);">
+      <div>
+        <p class="hero-label">Quick Actions</p>
+        <h2 style="font-size: 24px; color: var(--text-dark); margin-bottom: 24px;">What would you like to do?</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <a href="{{ url_for('routes.planner') }}" style="background: linear-gradient(135deg, var(--primary-light), var(--secondary-light)); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; text-align: center; text-decoration: none; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="font-size: 32px;">📅</div>
+          <div style="font-weight: 600; color: var(--text-dark);">Study Planner</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Create your schedule</div>
+        </a>
+
+        <a href="{{ url_for('routes.revision') }}" style="background: linear-gradient(135deg, var(--accent-light), var(--secondary-light)); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; text-align: center; text-decoration: none; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="font-size: 32px;">📖</div>
+          <div style="font-weight: 600; color: var(--text-dark);">Start Revision</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Review topics</div>
+        </a>
+
+        <a href="{{ url_for('routes.analytics') }}" style="background: linear-gradient(135deg, var(--tertiary-light), var(--secondary-light)); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; text-align: center; text-decoration: none; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="font-size: 32px;">📊</div>
+          <div style="font-weight: 600; color: var(--text-dark);">Analytics</div>
+          <div style="font-size: 12px; color: var(--text-muted);">View your progress</div>
+        </a>
+
+        <a href="{{ url_for('routes.health_mode') }}" style="background: linear-gradient(135deg, #FFE8E8, #FFF0E6); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; text-align: center; text-decoration: none; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="font-size: 32px;">💚</div>
+          <div style="font-weight: 600; color: var(--text-dark);">Well-being</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Health insights</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/quotes.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock %}

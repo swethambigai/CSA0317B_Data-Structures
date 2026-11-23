@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Well-being | Smart Study Planner{% endblock %}
+
+{% block content %}
+<section style="background: linear-gradient(135deg, #FAF9FE 0%, #F7F5FA 50%, #F9F7FB 100%); padding-bottom: 48px;">
+  <div class="container">
+    <!-- HEADER -->
+    <div class="page-header">
+      <div>
+        <p class="hero-label">Adaptive Protection</p>
+        <h1>Health Maintenance Mode</h1>
+      </div>
+    </div>
+
+    <!-- CURRENT STATUS CARD -->
+    <div class="card" style="margin-bottom: 28px;">
+      <div style="display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
+        <div style="font-size: 48px;">
+          {% if fatigue_score <= 5 %}🌟{% elif fatigue_score <= 10 %}⚠️{% elif fatigue_score <= 15 %}🧠{% else %}🚨{% endif %}
+        </div>
+        <div style="flex: 1; min-width: 260px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Current Status</div>
+          <h2 style="font-size: 26px; color: var(--text-dark); margin-bottom: 8px; line-height: 1.2;">
+            {% if fatigue_score <= 5 %}
+              Optimal Study Condition (Normal)
+            {% elif fatigue_score <= 10 %}
+              Mild Fatigue Detected
+            {% elif fatigue_score <= 15 %}
+              High Fatigue Warning
+            {% else %}
+              Critical Fatigue — Health Mode Active
+            {% endif %}
+          </h2>
+          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0;">
+            {% if fatigue_score <= 5 %}
+              Your fatigue level is in the optimal range. Continue with your standard study schedule and maintain regular breaks.
+            {% elif fatigue_score <= 10 %}
+              Moderate fatigue detected. We recommend adding 10-15 minute extra breaks and avoiding continuous study blocks over 50 minutes.
+            {% elif fatigue_score <= 15 %}
+              High fatigue detected. The scheduler automatically reduces workload, limits study sessions to max 3 hours, and postpones demanding topics.
+            {% else %}
+              Critical fatigue level detected. Health Maintenance Mode is active. Demanding study topics are postponed, capping daily study to 2 hours with light revision and relaxation activities.
+            {% endif %}
+          </p>
+        </div>
+        <div style="text-align: center; min-width: 140px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Fatigue Score</div>
+          <div style="font-size: 40px; font-weight: 800; color: var(--primary-color); line-height: 1; margin-bottom: 8px;">{{ fatigue_score }}</div>
+          <div style="{% if fatigue_score <= 5 %}background: var(--success-light); color: var(--success-color);{% elif fatigue_score <= 10 %}background: var(--warning-light); color: var(--warning-color);{% else %}background: var(--danger-light); color: var(--danger-color);{% endif %} padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+            {{ fatigue_level }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FATIGUE FORMULA & METRICS -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <p class="card-label">Scientific Metrics</p>
+          <h2>Fatigue Score Formula</h2>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(135deg, var(--primary-light), var(--secondary-light)); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 11px; color: var(--primary-color); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Formula Equation</div>
+        <strong style="font-size: 17px; color: var(--text-dark); display: block; font-family: monospace;">
+          Fatigue Score = (H × 2) + (C × 1.5) + (D × 1) - (B × 2) - (S × 1.5)
+        </strong>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+          H = Hours Studied • C = Continuous Sessions • D = Topic Difficulty • B = Breaks Taken • S = Sleep Hours
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+        <div style="background: linear-gradient(135deg, #F7F5FA 0%, #FAF9FE 100%); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid var(--border-color);">
+          <div style="font-size: 24px; margin-bottom: 8px;">⏱️</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Tracked Study Hours</div>
+          <strong style="font-size: 20px; color: var(--text-dark); display: block;">{{ statistics.total_study_hours|default(0) }}h</strong>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #F7F5FA 0%, #FAF9FE 100%); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid var(--border-color);">
+          <div style="font-size: 24px; margin-bottom: 8px;">🔄</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Continuous Sessions</div>
+          <strong style="font-size: 20px; color: var(--text-dark); display: block;">{{ session.get('sessions', 1) }}</strong>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #F7F5FA 0%, #FAF9FE 100%); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid var(--border-color);">
+          <div style="font-size: 24px; margin-bottom: 8px;">☕</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Breaks Taken</div>
+          <strong style="font-size: 20px; color: var(--text-dark); display: block;">{{ session.get('breaks', 1) }}</strong>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #F7F5FA 0%, #FAF9FE 100%); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid var(--border-color);">
+          <div style="font-size: 24px; margin-bottom: 8px;">😴</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Night Sleep</div>
+          <strong style="font-size: 20px; color: var(--text-dark); display: block;">{{ session.get('sleep', '7.5') }} hrs</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- FATIGUE LEVELS GUIDE -->
+    <div class="card" style="margin-top: 28px;">
+      <div class="card-header">
+        <div>
+          <p class="card-label">Decision Guide</p>
+          <h2>Fatigue Levels & Adaptive Actions</h2>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <!-- Normal -->
+        <div style="background: linear-gradient(135deg, var(--success-light), #E8F5ED); border: 1px solid rgba(168, 213, 186, 0.3); border-left: 4px solid var(--success-color); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="font-size: 24px;">✅</div>
+            <div>
+              <div style="font-weight: 700; color: var(--text-dark);">Normal</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Score 0–5</div>
+            </div>
+          </div>
+          <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0;">
+            Follow full study schedule with standard breaks and focus blocks.
+          </p>
+        </div>
+
+        <!-- Mild Fatigue -->
+        <div style="background: linear-gradient(135deg, var(--warning-light), #FFF8E6); border: 1px solid rgba(232, 193, 87, 0.3); border-left: 4px solid var(--warning-color); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="font-size: 24px;">⚠️</div>
+            <div>
+              <div style="font-weight: 700; color: var(--text-dark);">Mild Fatigue</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Score 6–10</div>
+            </div>
+          </div>
+          <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0;">
+            Slightly reduce workload and insert 10–15 min extra breaks between sessions.
+          </p>
+        </div>
+
+        <!-- High Fatigue -->
+        <div style="background: linear-gradient(135deg, #FFEBD6, #FFF3E6); border: 1px solid rgba(255, 170, 86, 0.3); border-left: 4px solid #FF8C00; border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="font-size: 24px;">🧠</div>
+            <div>
+              <div style="font-weight: 700; color: var(--text-dark);">High Fatigue</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Score 11–15</div>
+            </div>
+          </div>
+          <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0;">
+            Shorten study sessions (max 3h), increase breaks, and prioritize easier/revision tasks.
+          </p>
+        </div>
+
+        <!-- Critical Fatigue -->
+        <div style="background: linear-gradient(135deg, var(--danger-light), #FFE8E8); border: 1px solid rgba(232, 168, 168, 0.3); border-left: 4px solid var(--danger-color); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="font-size: 24px;">🚨</div>
+            <div>
+              <div style="font-weight: 700; color: var(--text-dark);">Critical Fatigue</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Score > 15</div>
+            </div>
+          </div>
+          <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0;">
+            Recommend rest, cap study to 2 hours, and reschedule all demanding tasks.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WELLNESS TASKS -->
+    <div class="card" style="margin-top: 28px;">
+      <div class="card-header">
+        <div>
+          <p class="card-label">Recovery Plan</p>
+          <h2>Recommended Relaxation Activities</h2>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+        <div style="background: linear-gradient(135deg, var(--secondary-light), var(--tertiary-light)); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid rgba(184, 229, 216, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 8px;">🧘</div>
+          <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">5-Min Deep Breathing</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Reduces mental cortisol</div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--secondary-light), var(--tertiary-light)); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid rgba(184, 229, 216, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 8px;">🚶</div>
+          <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">10-Min Walk</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Improves blood circulation</div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--secondary-light), var(--tertiary-light)); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid rgba(184, 229, 216, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 8px;">💧</div>
+          <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">Hydrate with Water</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Prevents mental fatigue</div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--secondary-light), var(--tertiary-light)); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid rgba(184, 229, 216, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 8px;">😴</div>
+          <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">20-Min Power Nap</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Restores cognitive focus</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="{{ url_for('routes.planner') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+          ← Return to Study Planner
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

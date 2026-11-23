@@ -1,0 +1,116 @@
+{% extends "base.html" %} {% block title %}Home | Smart Study Planner{% endblock
+%} {% block content %}
+
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-text">
+      <p class="hero-label">YOUR PERSONAL STUDY COMPANION</p>
+
+      <h1>
+        Study Smarter.
+        <br />
+        Take Care of Yourself.
+      </h1>
+
+      <p class="hero-description">
+        Smart Study Planner helps you organize your studies, monitor fatigue,
+        manage revisions, and create a healthier and more balanced learning
+        routine.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="{{ url_for('routes.register') }}" class="btn btn-primary">
+          Get Started
+        </a>
+
+        <a href="{{ url_for('routes.login') }}" class="btn btn-secondary">
+          Login
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="card-icon">🌱</div>
+
+      <h2>Your Well-being Matters</h2>
+
+      <p>
+        Your study plan adapts when you're tired, helping you maintain
+        productivity without overwhelming yourself.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="section-heading">
+      <p class="hero-label">WHAT WE OFFER</p>
+
+      <h2>A Smarter Way to Study</h2>
+
+      <p>
+        One system to organize your studies, track your progress, and protect
+        your well-being.
+      </p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📚</div>
+
+        <h3>Smart Study Planning</h3>
+
+        <p>
+          Organize subjects and topics and automatically create a study schedule
+          based on priority and difficulty.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+
+        <h3>Fatigue Detection</h3>
+
+        <p>
+          Calculate your fatigue level using study hours, sleep, breaks,
+          difficulty, and mood.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌱</div>
+
+        <h3>Health Maintenance</h3>
+
+        <p>
+          When fatigue becomes high, your study plan automatically adapts and
+          gives you more time to rest.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+
+        <h3>Progress Analytics</h3>
+
+        <p>
+          Understand your study habits through productivity statistics, fatigue
+          trends, and revision analytics.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="quote-section">
+  <div class="container">
+    <div class="quote-card">
+      <p class="quote">"Small steps every day create big results."</p>
+
+      <p class="quote-author">— Your Smart Study Planner</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

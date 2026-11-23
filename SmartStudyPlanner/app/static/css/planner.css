@@ -1,0 +1,835 @@
+/* =========================================================
+   STUDY PLANNER - PEACEFUL UI
+   ========================================================= */
+
+:root {
+  --primary-color: #9B8FC4;
+  --primary-hover: #8B7FB4;
+  --primary-light: #F1EEFA;
+  --secondary-color: #F5D5C0;
+  --secondary-light: #FFF0E6;
+  --tertiary-color: #B8E5D8;
+  --tertiary-light: #E8F9F5;
+  --accent-color: #E8B4C8;
+  --accent-light: #FFF0F6;
+  --text-dark: #2D2D3D;
+  --text-muted: #6F7A82;
+  --bg-main: linear-gradient(135deg, #FAF9FE 0%, #F7F5FA 50%, #F9F7FB 100%);
+  --card-bg: #FFFFFF;
+  --border-color: rgba(155, 143, 196, 0.08);
+  
+  /* Difficulty colors */
+  --diff-easy: #A8D5BA;
+  --bg-easy: #E8F5ED;
+  --diff-medium: #E8C157;
+  --bg-medium: #FFF8E6;
+  --diff-hard: #E8A8A8;
+  --bg-hard: #FFE8E8;
+  
+  --shadow-sm: 0 4px 12px rgba(155, 143, 196, 0.08);
+  --shadow-md: 0 8px 24px rgba(155, 143, 196, 0.12);
+  --shadow-lg: 0 16px 40px rgba(155, 143, 196, 0.16);
+  
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --transition: all 0.3s cubic-bezier(.25, .46, .45, .94);
+}
+
+.planner-page {
+  background: var(--bg-main);
+  padding-bottom: 48px;
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 0 24px;
+  flex-wrap: wrap;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.hero-label {
+  display: block;
+  color: var(--primary-color);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* =========================================================
+   GRID LAYOUT
+   ========================================================= */
+.planner-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+
+/* =========================================================
+   CARD STYLES
+   ========================================================= */
+.card,
+.planner-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF9FE 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover,
+.planner-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-label {
+  display: block;
+  color: var(--primary-color);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.card-header h2 {
+  color: var(--text-dark);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* =========================================================
+   FATIGUE CARD
+   ========================================================= */
+.fatigue-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF9FE 100%);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+/* =========================================================
+   FORM ELEMENTS
+   ========================================================= */
+.planner-form-group {
+  margin-bottom: 18px;
+}
+
+.planner-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.planner-input,
+.planner-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF9FE 100%);
+  color: var(--text-dark);
+  font-family: inherit;
+  font-size: 14px;
+  transition: var(--transition);
+}
+
+.planner-input:focus,
+.planner-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(155, 143, 196, 0.1);
+}
+
+/* =========================================================
+   TOPIC QUEUE
+   ========================================================= */
+.topic-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.topic-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #F7F5FA 0%, #FAF9FE 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.topic-item:hover {
+  background: linear-gradient(135deg, #F1EEFA 0%, #F5F3FA 100%);
+  transform: scale(1.01);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.topic-number {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+  color: var(--primary-color);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.topic-details {
+  flex: 1;
+}
+
+.topic-details strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.topic-details span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   DIFFICULTY BADGES
+   ========================================================= */
+.difficulty {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.difficulty.easy {
+  background: var(--bg-easy);
+  color: var(--diff-easy);
+}
+
+.difficulty.medium {
+  background: var(--bg-medium);
+  color: var(--diff-medium);
+}
+
+.difficulty.hard {
+  background: var(--bg-hard);
+  color: var(--diff-hard);
+}
+
+/* =========================================================
+   STUDY SESSIONS & TIMELINE
+   ========================================================= */
+.study-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.study-session {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  padding-left: 40px;
+}
+
+.study-session:last-child {
+  border-bottom: none;
+}
+
+.study-session::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  border-radius: 50%;
+  border: 3px solid var(--card-bg);
+}
+
+.study-session::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 20px;
+  width: 2px;
+  height: calc(100% + 20px);
+  background: var(--border-color);
+}
+
+.study-session:last-child::after {
+  display: none;
+}
+
+.session-time {
+  min-width: 100px;
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.session-content {
+  flex: 1;
+}
+
+.session-content h3 {
+  font-size: 15px;
+  color: var(--text-dark);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.session-content p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.session-duration {
+  font-size: 11px;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* =========================================================
+   BREAK BLOCK
+   ========================================================= */
+.break-block {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--secondary-light), var(--tertiary-light));
+  border-left: 4px solid var(--secondary-color);
+  border-radius: var(--radius-sm);
+  margin: 12px 0;
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   HEALTH WARNING
+   ========================================================= */
+.health-warning {
+  background: linear-gradient(135deg, #FFF8E6, #FFE8E8);
+  border: 1px solid rgba(232, 193, 87, 0.3);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.health-warning strong {
+  display: block;
+  color: #E8C157;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.health-warning p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+.schedule-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-item {
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.summary-item strong {
+  display: block;
+  color: var(--primary-color);
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.summary-item span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  color: #FFFFFF;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.queue-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.queue-button {
+  border: 1px solid var(--border-color);
+  background: linear-gradient(135deg, #F7F5FA, #FAF9FE);
+  color: var(--primary-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.queue-button:hover {
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  .planner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .study-session {
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 20px;
+  }
+
+  .session-time {
+    width: auto;
+  }
+
+/* =========================
+   HEADER
+   ========================= */
+
+.planner-header {
+    padding: 40px 0 25px;
+}
+
+.planner-header h1 {
+    font-size: 32px;
+    color: #263b30;
+}
+
+.planner-header p {
+    color: #718078;
+}
+
+/* =========================
+   MAIN LAYOUT
+   ========================= */
+
+.planner-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+}
+
+/* =========================
+   CARD
+   ========================= */
+
+.planner-card {
+    background: #ffffff;
+    border: 1px solid #e1e8e2;
+    border-radius: 14px;
+
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.planner-card h2 {
+    color: #2f3e35;
+    font-size: 19px;
+    margin-bottom: 18px;
+}
+
+/* =========================
+   FORM
+   ========================= */
+
+.planner-form-group {
+    margin-bottom: 16px;
+}
+
+.planner-form-group label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #435148;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.planner-input,
+.planner-select {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid #d7dfd9;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #ffffff;
+    color: #334138;
+}
+
+.planner-input:focus,
+.planner-select:focus {
+    border-color: #5b956f;
+
+    box-shadow:
+        0 0 0 3px rgba(91, 149, 111, 0.12);
+}
+
+/* =========================
+   TOPIC QUEUE
+   ========================= */
+
+.topic-queue {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.topic-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px;
+
+    background: #f7f9f7;
+
+    border: 1px solid #e4e9e5;
+
+    border-radius: 9px;
+}
+
+.topic-number {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e1eee5;
+    color: #39714f;
+
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.topic-details {
+    flex: 1;
+}
+
+.topic-details strong {
+    display: block;
+    font-size: 13px;
+    color: #3b493f;
+}
+
+.topic-details span {
+    font-size: 11px;
+    color: #7c8881;
+}
+
+/* =========================
+   DIFFICULTY
+   ========================= */
+
+.difficulty {
+    padding: 4px 8px;
+
+    border-radius: 15px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.difficulty.easy {
+    background: #e3f3e7;
+    color: #3e754f;
+}
+
+.difficulty.medium {
+    background: #fff2d7;
+    color: #85631e;
+}
+
+.difficulty.hard {
+    background: #f8e3e3;
+    color: #914848;
+}
+
+/* =========================
+   STUDY SESSIONS
+   ========================= */
+
+.study-session {
+    display: flex;
+    gap: 16px;
+
+    padding: 17px 0;
+
+    border-bottom: 1px solid #edf0ed;
+}
+
+.study-session:last-child {
+    border-bottom: none;
+}
+
+.session-time {
+    width: 80px;
+    color: #708077;
+    font-size: 12px;
+}
+
+.session-content {
+    flex: 1;
+}
+
+.session-content h3 {
+    font-size: 14px;
+    color: #344239;
+}
+
+.session-content p {
+    margin-top: 3px;
+    color: #7c8881;
+    font-size: 12px;
+}
+
+.session-duration {
+    font-size: 11px;
+    color: #4f795f;
+}
+
+/* =========================
+   BREAK
+   ========================= */
+
+.break-block {
+    padding: 12px;
+
+    background: #edf5ef;
+
+    border-left: 4px solid #619071;
+
+    border-radius: 7px;
+
+    margin: 10px 0;
+
+    color: #53665a;
+
+    font-size: 12px;
+}
+
+/* =========================
+   HEALTH WARNING
+   ========================= */
+
+.health-warning {
+    background: #fff5df;
+
+    border: 1px solid #f0dfb9;
+
+    border-radius: 10px;
+
+    padding: 16px;
+
+    margin-bottom: 20px;
+}
+
+.health-warning strong {
+    display: block;
+    color: #765d25;
+    margin-bottom: 4px;
+}
+
+.health-warning p {
+    color: #7e6d48;
+    font-size: 12px;
+}
+
+/* =========================
+   QUEUE CONTROLS
+   ========================= */
+
+.queue-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.queue-button {
+    border: none;
+
+    background: #edf5ef;
+    color: #3f7653;
+
+    border-radius: 7px;
+
+    padding: 8px 12px;
+
+    font-size: 12px;
+}
+
+.queue-button:hover {
+    background: #dfede3;
+}
+
+/* =========================
+   SUMMARY
+   ========================= */
+
+.schedule-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    background: #f7f9f7;
+
+    border-radius: 9px;
+
+    padding: 14px;
+
+    text-align: center;
+}
+
+.summary-item strong {
+    display: block;
+    color: #39724f;
+    font-size: 20px;
+}
+
+.summary-item span {
+    font-size: 11px;
+    color: #7b8780;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+
+    .planner-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .schedule-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .study-session {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .session-time {
+        width: auto;
+    }
+}

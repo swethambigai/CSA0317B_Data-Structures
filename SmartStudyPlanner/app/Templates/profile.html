@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Smart Study Planner{% endblock %}
+
+{% block content %}
+<section style="background: linear-gradient(135deg, #FAF9FE 0%, #F7F5FA 50%, #F9F7FB 100%); padding-bottom: 48px;">
+  <div class="container">
+    <!-- HEADER -->
+    <div class="page-header">
+      <div>
+        <p class="hero-label">Your Profile</p>
+        <h1>Student Information</h1>
+      </div>
+    </div>
+
+    <!-- PROFILE OVERVIEW -->
+    <div class="card" style="margin-bottom: 28px;">
+      <div style="display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
+        <!-- Avatar -->
+        <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: 800; flex-shrink: 0;">
+          {% if student and student.name %}{{ student.name[0]|upper }}{% elif student_name %}{{ student_name[0]|upper }}{% else %}S{% endif %}
+        </div>
+
+        <!-- Info -->
+        <div style="flex: 1; min-width: 220px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Student</div>
+          <h2 style="font-size: 24px; color: var(--text-dark); margin-bottom: 8px; line-height: 1;">
+            {{ student.name if student else student_name }}
+          </h2>
+          <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Keep learning, keep growing.</p>
+        </div>
+
+        <!-- Stats -->
+        <div style="text-align: center; min-width: 140px;">
+          <div style="font-size: 36px; margin-bottom: 4px;">🔥</div>
+          <strong style="font-size: 22px; color: var(--primary-color); display: block;">
+            {{ statistics.total_study_hours|default(0) }} hrs
+          </strong>
+          <div style="font-size: 12px; color: var(--text-muted);">study time tracked</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN LAYOUT -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px;">
+      <!-- LEFT COLUMN: PERSONAL INFO -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <p class="card-label">Personal</p>
+            <h2>Your Information</h2>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0;">
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Full Name</div>
+            <div style="font-weight: 600; color: var(--text-dark);">{{ student.name if student else student_name }}</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Email</div>
+            <div style="font-weight: 600; color: var(--primary-color); text-align: right;">{{ student.email if student else session.get('student_email', 'student@example.com') }}</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Course</div>
+            <div style="font-weight: 600; color: var(--text-dark); text-align: right;">Computer Science</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Semester</div>
+            <div style="font-weight: 600; color: var(--text-dark); text-align: right;">Semester 4</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Institution</div>
+            <div style="font-weight: 600; color: var(--text-dark); text-align: right;">SIMATS University</div>
+          </div>
+
+          <div style="padding: 16px 0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Member Since</div>
+            <div style="font-weight: 600; color: var(--text-dark); text-align: right;">{{ student.created_at[:10] if student and student.created_at else '2026' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: PREFERENCES -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <p class="card-label">Preferences</p>
+            <h2>Study Settings</h2>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0;">
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Study Time</div>
+            <div style="font-weight: 600; color: var(--text-dark);">Evening</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Session Length</div>
+            <div style="font-weight: 600; color: var(--text-dark);">50 minutes</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Daily Goal</div>
+            <div style="font-weight: 600; color: var(--text-dark);">4 hours</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Break Duration</div>
+            <div style="font-weight: 600; color: var(--text-dark);">10 minutes</div>
+          </div>
+
+          <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Notifications</div>
+            <div style="font-weight: 600; color: var(--primary-color);">{% if settings and settings.get('notifications_enabled') %}Enabled{% else %}Disabled{% endif %}</div>
+          </div>
+
+          <div style="padding: 16px 0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Health Mode</div>
+            <div style="font-weight: 600; color: var(--text-dark);">Adaptive</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATISTICS GRID -->
+    <div class="card" style="margin-top: 28px;">
+      <div class="card-header">
+        <div>
+          <p class="card-label">Performance</p>
+          <h2>Your Statistics</h2>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="background: linear-gradient(135deg, var(--primary-light), var(--secondary-light)); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(155, 143, 196, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 12px;">📚</div>
+          <div style="font-size: 11px; color: var(--primary-color); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Topics Completed</div>
+          <strong style="font-size: 28px; color: var(--text-dark);">{{ statistics.completed_topics|default(0) }}</strong>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--tertiary-light), var(--secondary-light)); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(184, 229, 216, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 12px;">⏱️</div>
+          <div style="font-size: 11px; color: #2D9D78; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Hours</div>
+          <strong style="font-size: 28px; color: var(--text-dark);">{{ statistics.total_study_hours|default(0) }}</strong>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--accent-light), var(--secondary-light)); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(232, 180, 200, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 12px;">🎯</div>
+          <div style="font-size: 11px; color: #D67BA8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Completion Rate</div>
+          <strong style="font-size: 28px; color: var(--text-dark);">{{ statistics.completion_percentage|default(0) }}%</strong>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--warning-light), var(--secondary-light)); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(232, 193, 87, 0.3);">
+          <div style="font-size: 28px; margin-bottom: 12px;">🔥</div>
+          <div style="font-size: 11px; color: var(--warning-color); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Fatigue Level</div>
+          <strong style="font-size: 28px; color: var(--text-dark);">{{ statistics.average_fatigue|default(0) }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT ACTIONS (Change Password, Notifications, Export) -->
+    <div class="card" style="margin-top: 28px;">
+      <div class="card-header">
+        <div>
+          <p class="card-label">Account Security & Data</p>
+          <h2>Account Settings</h2>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 24px; margin-top: 12px;">
+        <!-- Change Password -->
+        <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+          <h3 style="font-size: 15px; margin-bottom: 12px; color: var(--text-dark);">Change Password</h3>
+          <form method="POST" action="{{ url_for('routes.profile_update') }}" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <input type="hidden" name="action" value="change_password" />
+            <input type="password" name="current_password" placeholder="Current password" required class="planner-input" style="max-width: 220px;" />
+            <input type="password" name="new_password" placeholder="New password (min 6 chars)" required class="planner-input" style="max-width: 220px;" />
+            <button type="submit" class="btn btn-primary">Update Password</button>
+          </form>
+        </div>
+
+        <!-- Notification Settings -->
+        <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h3 style="font-size: 15px; margin-bottom: 4px; color: var(--text-dark);">Study Reminders & Notifications</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Receive periodic reminders to stay on track</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <form method="POST" action="{{ url_for('routes.profile_update') }}" style="display: inline-flex; align-items: center; gap: 10px;">
+              <input type="hidden" name="action" value="toggle_notifications" />
+              <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                <input type="checkbox" name="notifications_enabled" value="1" {% if settings and settings.get('notifications_enabled') %}checked{% endif %} style="width: 18px; height: 18px; accent-color: var(--primary-color);" />
+                Enable
+              </label>
+              <button type="submit" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">Save</button>
+            </form>
+            <button type="button" id="preview-notification" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">Preview Notification</button>
+          </div>
+        </div>
+
+        <!-- Export Data -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h3 style="font-size: 15px; margin-bottom: 4px; color: var(--text-dark);">Export Study Records</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Download your complete study session analytics in CSV format</p>
+          </div>
+          <form method="POST" action="{{ url_for('routes.profile_update') }}">
+            <input type="hidden" name="action" value="export_data" />
+            <button type="submit" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
+              <span>📊</span> Export CSV
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
